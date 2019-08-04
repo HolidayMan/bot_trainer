@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from .base import Base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 
 class Plan(Base):
@@ -14,7 +14,7 @@ class Plan(Base):
     type = Column(Integer)
     status = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    user = relationship("User", backref="plans", order_by="User.id")
+    user = relationship("User", backref=backref("plans", cascade="all,delete"), order_by="User.id")
 
     TYPE_DAY = 1
     TYPE_WEEK = 2

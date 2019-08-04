@@ -9,7 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     tg_id = Column(Integer, unique=True)
-    first_name = Column(String(64), unique=True)
+    first_name = Column(String(64), unique=False)
     username = Column(String(64), unique=True)
     
     def __repr__(self):

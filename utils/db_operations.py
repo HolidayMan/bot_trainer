@@ -13,15 +13,19 @@ except ImportError:
 engine = DB_ENGINE
 Session = sessionmaker(bind=engine)
 
+
 class UserDB:
     
     def __init__(self, tguserobj):
         self.session = Session()
         self.user = self.session.query(User).filter(User.tg_id == tguserobj.id).first()
-        if self.user.first_name != tguserobj.first_name or self.user.username != tguserobj.username:
-            self.update(tguserobj)
         if not self.user: # user isn't in db
             self.user = self.create(tguserobj)
+            self.chat = self.create_chat(tguserobj, self.user)
+        else:
+            self.chat = self.get_chat(user=self.user)
+        if self.user.first_name != tguserobj.first_name or self.user.username != tguserobj.username:
+            self.update(tguserobj)
             
     
     def create(self, tguserobj):
@@ -29,6 +33,13 @@ class UserDB:
         self.session.add(new_user)
         self.session.commit()
         return new_user
+
+
+    def create_chat(self, tgchatobj, user):
+        chat = Chat(tg_id=tgchatobj.id, user=user)
+        self.session.add(chat)
+        self.session.commit()
+        return chat
 
 
     def update(self, tguserobj):
@@ -43,43 +54,24 @@ class UserDB:
         del self
 
 
-    @staticmethod
-    def create_user(tguserobj):
-        session = Session()
-        user = User(tg_id=tguserobj.id, first_name=tguserobj.first_name, username=tguserobj.username)
-        session.add(user)
-        session.commit()
-        session.close()
-        return user
+    def get_chat(tgchatobj=None, user=None):
+        if tgchatobj:
+            chat = self.session.query(Chat).filter(Chat.tg_id == tgchatobj.id).first()
+        elif user:
+            chat = self.session.query(Chat).join(Chat.user).filter(User.username == user.username).first()
+        else:
+            return None
+        return chat
 
-
-    @staticmethod
-    def get_user(tguserobj):
-        session = Session()
-        user = session.query(User).filter(User.tg_id == tguserobj.id).first()
-        session.close()
-        return user
-
-
-    @staticmethod
-    def update_user(tguserobj):
-        session = Session()
-        user = session.query(User).filter(User.tg_id == tguserobj.id).first()
-        user.first_name = tguserobj.first_name
-        user.username = tguserobj.username
-        session.commit()
-        session.close()
-        return user
     
-
     @staticmethod
-    def delete_user(tguserobj):
+    def get_all_users():
         session = Session()
-        user = session.query(User).filter(User.tg_id == tguserobj.id).first()
-        session.delete(user)
-        session.commit()
+        users = session.query(User).all()
         session.close()
+        return users
 
 
     def __del__(self):
         self.session.close()
+

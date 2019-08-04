@@ -1,14 +1,14 @@
 from sqlalchemy.orm import sessionmaker
-import os, sys
-sys.path.append(os.getcwd())
 from models.chat_model import Chat
 from models.plan_model import Plan
 from models.user_model import User
+
 
 try:
     from local_settings.config import DB_ENGINE
 except ImportError:
     from prod_settings.config import DB_ENGINE
+
 
 engine = DB_ENGINE
 Session = sessionmaker(bind=engine)

@@ -101,9 +101,9 @@ class PlanDB(ObjectDB):
     def mark_overdue(self):
         if not self.plan:
             return
-        if self.plan.is_overdue():
+        if self.plan.is_overdue() and self.plan.status != Plan.STATUS_OVERDUE:
             self.plan.status = Plan.STATUS_OVERDUE
-        self.session.commit()
+            self.session.commit()
 
 
     def mark_wait(self):

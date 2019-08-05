@@ -26,3 +26,18 @@ class Plan(Base):
     STATUS_DONE = 3
     STATUS_CANCELED = 4
 
+    def is_overdue(self):
+        time_passed = datetime.datetime.utcnow() - self.date_added
+        if self.type == self.TYPE_DAY:
+            return time_passed > 0
+        elif self.type == self.TYPE_WEEK:
+            return time_passed > 7
+        elif self.type == self.TYPE_MONTH:
+            return time_passed > 30
+        elif self.type == self.TYPE_YEAR:
+            return time_passed > 365
+    
+
+    def __repr__(self):
+        return '< Plan "%s" for user %s >' % (self.title, self.user.username)
+        

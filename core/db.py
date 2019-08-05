@@ -111,3 +111,10 @@ class PlanDB(ObjectDB):
             return
         self.plan.status = Plan.STATUS_WAIT
         self.session.commit()
+
+
+    def delete(self):
+        if not self.plan:
+            return
+        self.session.delete(self.plan)
+        self.session.commit()

@@ -1,7 +1,12 @@
-import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from .base import Base
 from sqlalchemy.orm import relationship, backref
+from .base import Base
+import datetime
+import calendar
+
+
+def get_ua_time():
+    return datetime.datetime.utcnow() + datetime.timedelta(hours=3)
 
 
 class Plan(Base):
@@ -10,12 +15,13 @@ class Plan(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String(128))
-    date_added = Column(DateTime, default=datetime.datetime.utcnow)
+    date_added = Column(DateTime, default=get_ua_time)
     type = Column(Integer)
     status = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship("User", backref=backref("plans", cascade="all,delete"), order_by="User.id")
 
+    TYPE_TODAY = 0
     TYPE_DAY = 1
     TYPE_WEEK = 2
     TYPE_MONTH = 3
@@ -27,15 +33,27 @@ class Plan(Base):
     STATUS_CANCELED = 4
 
     def is_overdue(self):
-        time_passed = datetime.datetime.utcnow() - self.date_added
-        if self.type == self.TYPE_DAY:
-            return time_passed > 0
+        delta = datetime.timedelta(days=1) - datetime.timedelta(
+                            hours=self.date_added.time().hour, 
+                            minutes=self.date_added.time().minute, 
+                            seconds=self.date_added.time().second
+                        )
+        if self.type == self.TYPE_TODAY:
+            tomorrow = self.date_added + delta
+            return get_ua_time() > tomorrow
+        elif self.type == self.TYPE_DAY:
+            after_tomorrow= self.date_added + datetime.timedelta(days=1) + delta
+            return get_ua_time() > after_tomorrow
         elif self.type == self.TYPE_WEEK:
-            return time_passed > 7
+            after_week = self.date_added + datetime.timedelta(days=7) + delta
+            return get_ua_time() > after_week
         elif self.type == self.TYPE_MONTH:
-            return time_passed > 30
+            curr_month_days = calendar.monthrange(self.date_added.year, self.date_added.month)[1]
+            after_month = self.date_added + datetime.timedelta(days=curr_month_days) + delta
+            return get_ua_time() > after_month
         elif self.type == self.TYPE_YEAR:
-            return time_passed > 365
+            after_year = self.date_added + datetime.timedelta(days=365) + delta
+            return get_ua_time() > after_year
     
 
     def __repr__(self):

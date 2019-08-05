@@ -107,3 +107,4 @@ venv.bak/
 local_settings/
 prod_settings/
 sqlite.db
+tests.py

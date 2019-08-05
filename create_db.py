@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine
-from models.chat_model import Chat
 from models.plan_model import Plan
 from models.user_model import User
 from models.base import Base

@@ -33,6 +33,10 @@ class Plan(Base):
     STATUS_CANCELED = 4
 
     def is_overdue(self):
+        if self.status == self.STATUS_OVERDUE:
+            return True
+        elif self.status != self.STATUS_WAIT:
+            return False
         delta = datetime.timedelta(days=1) - datetime.timedelta(
                             hours=self.date_added.time().hour, 
                             minutes=self.date_added.time().minute, 

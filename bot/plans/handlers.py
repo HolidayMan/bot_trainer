@@ -35,7 +35,7 @@ def cancel(call):
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_CHOOSETYPE.value)
 def choice_type(call):
-    user = UserDB(call.message.chat) # creating user in DB if he doesn't exist
+    UserDB(call.message.chat) # creating user in DB if he doesn't exist
     switch_type = {
         "today": Plan.TYPE_TODAY,
         "tomorrow": Plan.TYPE_DAY,

@@ -3,6 +3,7 @@ from models.plan_model import Plan
 from models.user_model import User
 from bot.states.base_states import States
 from vedis import Vedis
+
 try:
     import local_settings.config as config
 except ModuleNotFoundError:
@@ -133,4 +134,3 @@ def get_current_state(user_id):
             return db[user_id].decode()
         except KeyError:
             return States.S_ENTERCOMMAND.value
-        

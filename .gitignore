@@ -109,3 +109,4 @@ prod_settings/
 *.db
 tests.py
 *.vdb
+plan_buffer

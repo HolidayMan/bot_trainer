@@ -1,15 +1,13 @@
 from sqlalchemy.orm import sessionmaker
 from models.plan_model import Plan
 from models.user_model import User
-
-
+from bot.states.base_states import States
+from vedis import Vedis
 try:
-    from local_settings.config import DB_ENGINE
-except ImportError:
-    from prod_settings.config import DB_ENGINE
-
-
-engine = DB_ENGINE
+    import local_settings.config as config
+except ModuleNotFoundError:
+    import prod_settings.config as config
+engine = config.DB_ENGINE
 Session = sessionmaker(bind=engine)
 
 
@@ -118,3 +116,21 @@ class PlanDB(ObjectDB):
             return
         self.session.delete(self.plan)
         self.session.commit()
+
+
+def set_state(user_id, value):
+    with Vedis(config.STATES_FILE) as db:
+        try:
+            db[user_id] = value
+            return True
+        except:
+            return False
+
+
+def get_current_state(user_id):
+    with Vedis(config.STATES_FILE) as db:
+        try:
+            return db[user_id].decode()
+        except KeyError:
+            return States.S_ENTERCOMMAND.value
+        

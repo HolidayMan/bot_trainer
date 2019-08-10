@@ -1,6 +1,7 @@
 from bot.bot import bot
 from telebot import types
 from bot.states.plan_states import PlanStates
+from bot.states.base_states import States
 from bot.plans.plan_buffer import PlanBuffer
 from core.db import set_state, PlanDB, UserDB, get_current_state
 from models.plan_model import Plan
@@ -28,12 +29,13 @@ def add_plan(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == "cancel")
 def cancel(call):
+    set_state(call.message.chat.id, States.S_ENTERCOMMAND.value)
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_CHOOSETYPE.value)
 def choice_type(call):
-    user = UserDB(call.message.chat)
+    user = UserDB(call.message.chat) # creating user in DB if he doesn't exist
     switch_type = {
         "today": Plan.TYPE_TODAY,
         "tomorrow": Plan.TYPE_DAY,
@@ -44,7 +46,23 @@ def choice_type(call):
     new_plan = Plan(type=switch_type)
     plan_buffer = PlanBuffer()
     plan_buffer.buffer[call.message.chat.username+"plan"] = new_plan
-    plan_buffer.save()
     bot.delete_message(call.message.chat.id, call.message.message_id)
+    set_state(call.message.chat.id, PlanStates.S_ENTERTITLE.value)
+    bot.send_message(call.message.chat.id, "Какое название?")
 
 
+@bot.message_handler(func=lambda message: get_current_state(message.chat.id) == PlanStates.S_ENTERTITLE.value)
+def enter_title(message):
+    user = UserDB(message.chat)
+    if len(message.text) > 128:
+        bot.send_message(message.chat.id, "Слишком длинное название. Максимальная длина 128 символов. Попробуй снова.")
+        return
+    plan_buffer = PlanBuffer()
+    plan = plan_buffer.buffer[message.chat.username+"plan"]
+    plan.title = message.text
+    plan.user = user.user
+    plan.status = Plan.STATUS_WAIT
+    bot.send_message(message.chat.id, f'План "{plan.title}" успешно создан!')
+    PlanDB().create(plan=plan)
+    set_state(message.chat.id, States.S_ENTERCOMMAND.value)
+    

@@ -62,7 +62,7 @@ def enter_title(message):
     plan.title = message.text
     plan.user = user.user
     plan.status = Plan.STATUS_WAIT
-    bot.send_message(message.chat.id, f'План "{plan.title}" успешно создан!')
-    PlanDB().create(plan=plan)
+    PlanDB(user).create(plan=plan) # connection will be closed here
+    bot.send_message(message.chat.id, f'План "{message.text}" успешно создан!')
     set_state(message.chat.id, States.S_ENTERCOMMAND.value)
     

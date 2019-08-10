@@ -15,10 +15,8 @@ Session = sessionmaker(bind=engine)
 class ObjectDB:
     session = Session()
 
-    def print_sess(self):
-        print(id(self.session))
 
-    def close_session(self):
+    def __del__(self):
         self.session.close()
 
 
@@ -67,8 +65,11 @@ class PlanDB(ObjectDB):
             self.plan = instance
 
 
-    def create(self, title, type, user=None):
-        new_plan = Plan(title=title, type=type, status=Plan.STATUS_WAIT, user=self.user if not user else user)
+    def create(self, title=None, type=None, user=None, plan=None):
+        if not plan:
+            new_plan = Plan(title=title, type=type, status=Plan.STATUS_WAIT, user=self.user if not user else user)
+        else:
+            new_plan = plan
         self.session.add(new_plan)
         self.session.commit()
         return new_plan

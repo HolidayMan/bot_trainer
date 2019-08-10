@@ -107,6 +107,7 @@ venv.bak/
 local_settings/
 prod_settings/
 *.db
+*.db-journal
 tests.py
 *.vdb
 plan_buffer

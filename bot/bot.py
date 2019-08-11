@@ -19,10 +19,10 @@ def cmd_start(message):
 @bot.message_handler(commands=['cancel'])
 def cmd_cancel(message):
     set_state(message.chat.id, States.S_ENTERCOMMAND.value)
+    bot.send_message(message.chat.id, "Введите команду.")
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "cancel")
 def cancel(call):
     set_state(call.message.chat.id, States.S_ENTERCOMMAND.value)
     bot.delete_message(call.message.chat.id, call.message.message_id)
-    

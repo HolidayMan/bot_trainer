@@ -25,3 +25,4 @@ def cmd_cancel(message):
 def cancel(call):
     set_state(call.message.chat.id, States.S_ENTERCOMMAND.value)
     bot.delete_message(call.message.chat.id, call.message.message_id)
+    

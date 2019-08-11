@@ -27,12 +27,6 @@ def add_plan(message):
     set_state(message.chat.id, PlanStates.S_CHOOSETYPE.value)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "cancel")
-def cancel(call):
-    set_state(call.message.chat.id, States.S_ENTERCOMMAND.value)
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-
-
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_CHOOSETYPE.value)
 def choice_type(call):
     UserDB(call.message.chat) # creating user in DB if he doesn't exist

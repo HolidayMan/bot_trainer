@@ -61,10 +61,14 @@ class Paginator:
         self.num_pages = len(self.pages)
 
 
-    def page(self,number):
+    def page(self, number):
         if number < 1 or number > len(self.pages):
             raise ValueError("invalid page number")
         return self.pages[number-1]
+
+    
+    def last_page_number(self):
+        return self.pages[-1].number
 
     
     def __getitem__(self, key):

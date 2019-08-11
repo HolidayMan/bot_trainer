@@ -17,10 +17,12 @@ class Page:
     next_page = None
     previous_page_number = None
     next_page_number = None
-    def __init__(self, data, num, paginator):
+    def __init__(self, data, num, paginator, start_index, last_index):
         self.data = data
         self.number = num
         self.paginator = paginator
+        self.start_index = start_index
+        self.last_index = last_index
 
 
     def has_next(self):
@@ -34,12 +36,19 @@ class Page:
     def __repr__(self):
         return f"<Page %d of %d>" % (self.number, len(self.paginator.pages))
 
+    
+    def __getitem__(self, key):
+        if key < -1 or key > len(self.data) - 1:
+            raise StopIteration
+        return self.data[key]
+
 
 class Paginator:
     def __init__(self, sequence, step):
         self.pages = []
-        for num, page in enumerate(build_pages(sequence, step), 1):
-            new_page = Page(page, num, self)
+        pages = build_pages(sequence, step)
+        for num, page in enumerate(pages, 1):
+            new_page = Page(page, num, self, num * step - step, len(sequence)-1 if num == len(pages) else num * step - 1)
             self.pages.append(new_page)
             if num == 1:
                 previous_page = new_page

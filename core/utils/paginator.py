@@ -33,6 +33,10 @@ class Page:
         return bool(self.previous_page)
 
 
+    def get_range(self):
+        return range(self.start_index, self.last_index+1)
+
+
     def __repr__(self):
         return f"<Page %d of %d>" % (self.number, len(self.paginator.pages))
 

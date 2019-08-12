@@ -118,8 +118,13 @@ def edit_plan(call):
     buffer = Buffer()
     plan = buffer.buffer[str(call.message.chat.id)+"editplanslist"][plan_index] # get a plan instance
     buffer.buffer[str(call.message.chat.id)+"editchosenplan"] = plan
-
-    message_text = f"Что сделать?\n {plan_index+1} _{plan.title}_"
+    switch_status = {
+                Plan.STATUS_WAIT: "⏱",
+                Plan.STATUS_OVERDUE: "❗️",
+                Plan.STATUS_CANCELED: "❌",
+                Plan.STATUS_DONE: "✅"
+            }[plan.status]
+    message_text = f"Что сделать?\n {plan_index+1} _{plan.title}_ {switch_status}"
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     mark_done_button = types.InlineKeyboardButton(text="✅", callback_data="plan_mark_done")
     mark_canceled_button = types.InlineKeyboardButton(text="✖️", callback_data="plan_mark_canceled")
@@ -155,4 +160,17 @@ def edit_plan_mark_done(call):
     buffer.buffer[str(call.message.chat.id)+"editplanslist"] = plans
     buffer.save()
     edit_go_back(call)
-    
+
+
+@bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_EDITPLAN.value and call.data == "plan_mark_canceled")
+def edit_plan_mark_cancel(call):
+    buffer = Buffer()
+    plan = buffer.buffer[str(call.message.chat.id)+"editchosenplan"]
+    userdb = UserDB(call.message.chat)
+    plandb = PlanDB(user_db_object=userdb, instance=plan)
+    plandb.mark_canceled()
+    plans = plandb.get_all_plans(type=buffer.buffer[str(call.message.chat.id)+"planstype"])
+    buffer.buffer[str(call.message.chat.id)+"editplanslist"] = plans
+    buffer.save()
+    edit_go_back(call)
+

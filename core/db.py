@@ -61,8 +61,10 @@ class PlanDB(ObjectDB):
     def __init__(self, user_db_object=None, instance=None):
         if user_db_object:
             self.user = user_db_object.user
-        elif instance:
-            self.plan = instance
+        if instance:
+            
+            self.plan = self.session.query(Plan).filter(Plan.id == instance.id).first()
+            print(self.plan)
 
 
     def create(self, title=None, type=None, user=None, plan=None):
@@ -93,6 +95,7 @@ class PlanDB(ObjectDB):
     
     def mark_done(self):
         if not self.plan:
+            print("\n\n\nHello\n\n\n")
             return
         self.plan.status = Plan.STATUS_DONE
         self.session.commit()

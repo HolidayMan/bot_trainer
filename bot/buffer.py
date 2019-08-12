@@ -1,6 +1,6 @@
 import pickle
 
-class PlanBuffer:
+class Buffer:
     filetosave = "plan_buffer"
     buffer = {}
 

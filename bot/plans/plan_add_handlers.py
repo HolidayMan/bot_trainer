@@ -1,8 +1,8 @@
-from bot.bot import bot
+from bot.bot import bot, clean_buffer
 from telebot import types
 from bot.states.plan_states import PlanStates
 from bot.states.base_states import States
-from bot.plans.plan_buffer import PlanBuffer
+from bot.buffer import Buffer
 from core.db import set_state, PlanDB, UserDB, get_current_state
 from models.plan_model import Plan
 
@@ -38,8 +38,8 @@ def choice_type(call):
         "year": Plan.TYPE_YEAR
     }[call.data]
     new_plan = Plan(type=switch_type)
-    plan_buffer = PlanBuffer()
-    plan_buffer.buffer[call.message.chat.username+"plan"] = new_plan
+    buffer = Buffer()
+    buffer.buffer[str(call.message.chat.id)+"plan"] = new_plan
     bot.delete_message(call.message.chat.id, call.message.message_id)
     set_state(call.message.chat.id, PlanStates.S_NEWENTERTITLE.value)
     bot.send_message(call.message.chat.id, "Какое название?")
@@ -51,12 +51,13 @@ def enter_title(message):
     if len(message.text) > 128:
         bot.send_message(message.chat.id, "Слишком длинное название. Максимальная длина 128 символов. Попробуй снова.")
         return
-    plan_buffer = PlanBuffer()
-    plan = plan_buffer.buffer[message.chat.username+"plan"]
+    buffer = Buffer()
+    plan = buffer.buffer[str(message.chat.id)+"plan"]
     plan.title = message.text
     plan.user = user.user
     plan.status = Plan.STATUS_WAIT
     PlanDB(user).create(plan=plan) # connection will be closed here
+    clean_buffer(message.chat.id)
     bot.send_message(message.chat.id, f'План "{message.text}" успешно создан!')
     set_state(message.chat.id, States.S_ENTERCOMMAND.value)
     

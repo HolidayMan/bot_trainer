@@ -2,7 +2,7 @@ from bot.bot import bot
 from telebot import types
 from bot.states.plan_states import PlanStates
 from bot.states.base_states import States
-from bot.plans.plan_buffer import PlanBuffer
+from bot.buffer import Buffer
 from core.db import set_state, PlanDB, UserDB, get_current_state
 from models.plan_model import Plan
 from core.utils.paginator import Paginator
@@ -58,31 +58,27 @@ def edit_show_plans(call):
         "month": Plan.TYPE_MONTH,
         "year": Plan.TYPE_YEAR
     }[call.data]
-    plan_buffer = PlanBuffer()
-    plan_buffer.buffer[call.message.chat.username+"editplanstype"] = switch_type
-    plan_buffer.buffer[call.message.chat.username+"currentplanpage"] = 1
+    buffer = Buffer()
+    buffer.buffer[str(call.message.chat.id)+"currentplanpage"] = 1
     plandb = PlanDB(user_db_object=user)
     plans = plandb.get_all_plans(type=switch_type)
-    
+    buffer.buffer[str(call.message.chat.id)+"editplanslist"] = plans
     message_text, keyboard = paginate_plans(plans)
-    
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-    bot.send_message(call.message.chat.id, message_text, parse_mode="markdown", reply_markup=keyboard)
+
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=message_text, parse_mode="markdown", reply_markup=keyboard)
     set_state(call.message.chat.id, PlanStates.S_EDITCHOOSEPLAN.value)
     
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_EDITCHOOSEPLAN.value and call.data.split('_')[0] == "planpage")
 def edit_paginate(call):
     page_num = int(call.data.split('_')[1])
-    plan_buffer = PlanBuffer()
-    curr_page_num = plan_buffer.buffer[call.message.chat.username+"currentplanpage"]
-    plan_buffer.buffer[call.message.chat.username+"currentplanpage"] = page_num
-    print(curr_page_num)
+    buffer = Buffer()
+    curr_page_num = buffer.buffer[str(call.message.chat.id)+"currentplanpage"]
+    buffer.buffer[str(call.message.chat.id)+"currentplanpage"] = page_num
     if page_num == curr_page_num:
         return
-    user = UserDB(call.message.chat)
-    plan_type = plan_buffer.buffer[call.message.chat.username+"editplanstype"]
-    plandb = PlanDB(user_db_object=user)
-    plans = plandb.get_all_plans(type=plan_type)
+    plans = buffer.buffer[str(call.message.chat.id)+"editplanslist"]
     message_text, keyboard = paginate_plans(plans, page_num)
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=message_text, parse_mode="markdown", reply_markup=keyboard)
+
+

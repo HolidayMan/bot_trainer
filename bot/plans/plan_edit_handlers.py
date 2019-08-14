@@ -8,6 +8,14 @@ from models.plan_model import Plan
 from core.utils.paginator import Paginator
 
 
+SWITCH_STATUS = {
+    Plan.STATUS_WAIT: "⏱",
+    Plan.STATUS_OVERDUE: "❗️",
+    Plan.STATUS_CANCELED: "🚫",
+    Plan.STATUS_DONE: "✅"
+}
+
+
 def paginate_plans(plans, type, page=1,):
     plans_on_page = 10
     paginator = Paginator(plans, plans_on_page)
@@ -23,13 +31,7 @@ def paginate_plans(plans, type, page=1,):
     if page.data:
         message_text = f'Ваши планы на {switch_type}: (страница {page.number} из {paginator.last_page_number()})\n'
         for num, plan in enumerate(page, page.start_index+1): # generating of a message
-            switch_status = {
-                Plan.STATUS_WAIT: "⏱",
-                Plan.STATUS_OVERDUE: "❗️",
-                Plan.STATUS_CANCELED: "❌",
-                Plan.STATUS_DONE: "✅"
-            }[plan.status]
-            message_text+='{} _{}_ {}\n'.format(num, plan.title, switch_status)
+            message_text+='{} _{}_ {}\n'.format(num, plan.title, SWITCH_STATUS[plan.status])
     else:
         return  (f'У вас нет планов на {switch_type}', None)
 
@@ -53,27 +55,6 @@ def paginate_plans(plans, type, page=1,):
         next_page_button
     )
     return message_text, keyboard
-
-
-@bot.message_handler(commands=["my_plans"])
-def cmd_my_plans(message):
-    keyboard = types.InlineKeyboardMarkup()
-    today_button = types.InlineKeyboardButton(text="Сегодня", callback_data="today")
-    tomorrow_button = types.InlineKeyboardButton(text="Завтра", callback_data="tomorrow")
-    week_button = types.InlineKeyboardButton(text="Неделя", callback_data="week")
-    month_button = types.InlineKeyboardButton(text="Месяц", callback_data="month")
-    cancel_button = types.InlineKeyboardButton(text="❌", callback_data="cancel")
-    year_button = types.InlineKeyboardButton(text="Год", callback_data="year")
-    keyboard.add(
-                    today_button, 
-                    tomorrow_button,
-                    week_button,
-                    month_button,
-                    cancel_button,
-                    year_button
-                )
-    bot.send_message(message.chat.id, "Какие планы вам показать?", reply_markup=keyboard)
-    set_state(message.chat.id, PlanStates.S_EDITCHOOSETYPE.value)
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_EDITCHOOSETYPE.value)
@@ -118,16 +99,10 @@ def edit_plan(call):
     buffer = Buffer()
     plan = buffer.buffer[str(call.message.chat.id)+"editplanslist"][plan_index] # get a plan instance
     buffer.buffer[str(call.message.chat.id)+"editchosenplan"] = plan
-    switch_status = {
-                Plan.STATUS_WAIT: "⏱",
-                Plan.STATUS_OVERDUE: "❗️",
-                Plan.STATUS_CANCELED: "❌",
-                Plan.STATUS_DONE: "✅"
-            }[plan.status]
-    message_text = f"Что сделать?\n {plan_index+1} _{plan.title}_ {switch_status}"
+    message_text = f"Что сделать?\n {plan_index+1} _{plan.title}_ {SWITCH_STATUS[plan.status]}"
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     mark_done_button = types.InlineKeyboardButton(text="✅", callback_data="plan_mark_done")
-    mark_canceled_button = types.InlineKeyboardButton(text="✖️", callback_data="plan_mark_canceled")
+    mark_canceled_button = types.InlineKeyboardButton(text="🚫", callback_data="plan_mark_canceled")
     go_back_button = types.InlineKeyboardButton(text="️🔙", callback_data="go_back")
     cancel_button = types.InlineKeyboardButton(text="❌", callback_data="cancel")
     keyboard.add(

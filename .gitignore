@@ -105,7 +105,7 @@ venv.bak/
 
 .vscode
 local_settings/
-prod_settings/
+# prod_settings/
 *.db
 *.db-journal
 tests.py

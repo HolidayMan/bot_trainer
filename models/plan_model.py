@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
-from .base import Base
+from .base import Base, habbits2create
+from .habbit_model import Habbit
 import datetime
 import calendar
 
@@ -62,4 +63,10 @@ class Plan(Base):
 
     def __repr__(self):
         return '< Plan "%s" for user %s >' % (self.title, self.user.username)
-        
+
+    class Meta:
+        en_name = "planning"
+        ru_name = "планирование"
+
+
+habbits2create.append(Plan)

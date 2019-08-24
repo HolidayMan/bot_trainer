@@ -1,6 +1,9 @@
 from sqlalchemy.orm import sessionmaker
+
 from models.plan_model import Plan
 from models.user_model import User
+from models.habbit_model import Habbit
+
 from bot.states.base_states import States
 from vedis import Vedis
 
@@ -62,9 +65,7 @@ class PlanDB(ObjectDB):
         if user_db_object:
             self.user = user_db_object.user
         if instance:
-            
             self.plan = self.session.query(Plan).filter(Plan.id == instance.id).first()
-            print(self.plan)
 
 
     def create(self, title=None, type=None, user=None, plan=None):
@@ -138,3 +139,56 @@ def get_current_state(user_id):
             return db[user_id].decode()
         except KeyError:
             return States.S_ENTERCOMMAND.value
+
+
+class HabbitDB(ObjectDB):
+    def __init__(self, user_db_object=None, instance=None):
+        if user_db_object:
+            self.user = user_db_object.user
+        if instance:
+            self.get_habbit(instance.en_name)
+
+    
+    def get_habbit(self, en_name=None, ru_name=None):
+        if en_name:
+            self.habbit = self.session.query(Habbit).filter(Habbit.en_name == en_name).first()
+        elif ru_name:
+            self.habbit = self.session.query(Habbit).filter(Habbit.ru_name == ru_name).first()
+        return self.habbit
+
+
+    def get_all_users(self):
+        if not self.habbit:
+            return
+        return self.habbit.users
+
+
+    def get_all_habbits(self):
+        habbits = self.session.query(Habbit).all()
+        if self.user:
+            user_habbits = self.user.habbits
+        else:
+            user_habbits = []
+        return list(set(habbits) ^ set(user_habbits))
+
+
+    def set_habbit(self):
+        if not self.user or not self.habbit:
+            return 
+        
+        if not self.habbit in self.user.habbits:
+            if len(self.user.habbits) < 3:
+                self.user.habbits.append(self.habbit)
+                self.session.commit()
+            else:
+                raise ValueError("Max amount of habbits is 3")
+        else:
+            raise ValueError("User already has this habbit")
+        
+    
+    def unset_habbit(self):
+        if not self.user or not self.habbit:
+            return 
+        
+        self.user.habbits.pop(self.user.habbits.index(self.habbit))
+        self.session.commit()

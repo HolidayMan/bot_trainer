@@ -110,4 +110,4 @@ local_settings/
 *.db-journal
 tests.py
 *.vdb
-plan_buffer
+buffer

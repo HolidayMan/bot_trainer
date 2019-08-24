@@ -1,6 +1,6 @@
 import telebot
 from bot.states.base_states import States
-from core.db import UserDB, set_state
+from core.db import UserDB, HabbitDB, set_state
 from bot.buffer import Buffer
 try:
     import local_settings.config as config
@@ -23,7 +23,15 @@ bot = telebot.TeleBot(config.TOKEN)
 @bot.message_handler(commands=['start'])
 def cmd_start(message):
     HELP_MESSAGE = "It's a bot"
-    UserDB(message.chat)
+    if not message.chat.type == "private":
+        bot.send_message(message.chat.id, "I work only in private chats.")
+        return
+    userdb = UserDB(message.chat)
+    habbitdb = HabbitDB(user_db_object=userdb)
+    for habbit_en_name in config.DEFAULT_HABBITS:
+        habbitdb.get_habbit(en_name=habbit_en_name)
+        habbitdb.set_habbit()
+    
     bot.send_message(message.chat.id, HELP_MESSAGE)
 
 

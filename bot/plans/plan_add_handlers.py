@@ -7,7 +7,7 @@ from core.db import set_state, PlanDB, UserDB, get_current_state
 from models.plan_model import Plan
 
 @bot.message_handler(commands=["add_plan"])
-def add_plan(message):
+def add_plan(message=None, chat_id=None):
     keyboard = types.InlineKeyboardMarkup()
     today_button = types.InlineKeyboardButton(text="Сегодня", callback_data="today")
     tomorrow_button = types.InlineKeyboardButton(text="Завтра", callback_data="tomorrow")
@@ -23,8 +23,10 @@ def add_plan(message):
                     cancel_button,
                     year_button
                 )
-    bot.send_message(message.chat.id, "На когда план?", reply_markup=keyboard)
-    set_state(message.chat.id, PlanStates.S_NEWCHOOSETYPE.value)
+    if message:
+        chat_id = message.chat.id
+    bot.send_message(chat_id, "На когда план?", reply_markup=keyboard)
+    set_state(chat_id, PlanStates.S_NEWCHOOSETYPE.value)
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == PlanStates.S_NEWCHOOSETYPE.value)

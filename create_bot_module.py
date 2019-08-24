@@ -16,3 +16,17 @@ from core.db import set_state, get_current_state, PlanDB, UserDB
 
 with open(os.path.join(module_dir, '__init__.py'), 'w'):
     pass
+
+
+with open(os.path.join(module_dir, 'description.py'), 'w'):
+    pass
+
+
+with open(os.path.join(module_dir, "shedulers.py"), 'w') as file:
+    file.write("import schedule\n")
+
+
+with open(os.path.join(BASE_DIR, 'bot', 'schedulers.py'), 'a') as file:
+    file.write("import {}.schedulers\n".format(module_name))
+
+

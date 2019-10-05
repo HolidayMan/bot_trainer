@@ -5,15 +5,13 @@ from .description import EN_NAME
 from .plan_add_handlers import add_plan
 
 
-habbitdb = HabbitDB()
-habbitdb.get_habbit(en_name=EN_NAME)
+def get_all_users():
+    habbitdb = HabbitDB(en_name=EN_NAME)
+    return habbitdb.get_all_users()
 
-USERS = habbitdb.get_all_users()
-
-del habbitdb
 
 def remind2plan(users):
     for user in users:
         add_plan(chat_id=user.tg_id)
 
-schedule.every().day.at('02:41:00').do(remind2plan, users=USERS)
+schedule.every().day.at('21:09:00').do(remind2plan, users=get_all_users())

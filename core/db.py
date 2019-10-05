@@ -142,14 +142,16 @@ def get_current_state(user_id):
 
 
 class HabbitDB(ObjectDB):
-    def __init__(self, user_db_object=None, instance=None):
+    def __init__(self, user_db_object=None, instance=None, en_name=None, ru_name=None):
         if user_db_object:
             self.user = user_db_object.user
         if instance:
-            self.get_habbit(instance.en_name)
+            self.set_habbit(instance.en_name, instance.ru_name)
+        if en_name or ru_name:
+            self.set_habbit(en_name, ru_name)
 
     
-    def get_habbit(self, en_name=None, ru_name=None):
+    def set_habbit(self, en_name=None, ru_name=None):
         if en_name:
             self.habbit = self.session.query(Habbit).filter(Habbit.en_name == en_name).first()
         elif ru_name:
@@ -172,7 +174,7 @@ class HabbitDB(ObjectDB):
         return list(set(habbits) ^ set(user_habbits))
 
 
-    def set_habbit(self):
+    def set_user_habbit(self): # sets a new habbit for user
         if not self.user or not self.habbit:
             return 
         
@@ -186,7 +188,7 @@ class HabbitDB(ObjectDB):
             raise ValueError("User already has this habbit")
         
     
-    def unset_habbit(self):
+    def unset_user_habbit(self): # unsets a gabbit for user
         if not self.user or not self.habbit:
             return 
         

@@ -29,8 +29,8 @@ def cmd_start(message):
     userdb = UserDB(message.chat)
     habbitdb = HabbitDB(user_db_object=userdb)
     for habbit_en_name in config.DEFAULT_HABBITS:
-        habbitdb.get_habbit(en_name=habbit_en_name)
-        habbitdb.set_habbit()
+        habbitdb.set_habbit(en_name=habbit_en_name)
+        habbitdb.set_user_habbit()
     
     bot.send_message(message.chat.id, HELP_MESSAGE)
 

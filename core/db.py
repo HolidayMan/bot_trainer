@@ -7,10 +7,13 @@ from models.habbit_model import Habbit
 from bot.states.base_states import States
 from vedis import Vedis
 
+from .exceptions import *
+
 try:
     import local_settings.config as config
 except ModuleNotFoundError:
     import prod_settings.config as config
+
 engine = config.DB_ENGINE
 Session = sessionmaker(bind=engine)
 
@@ -54,9 +57,13 @@ class UserDB(ObjectDB):
     
     @staticmethod
     def get_all_users():
-        session = Session()
-        users = session.query(User).all()
-        session.close()
+        try:
+            session = Session()
+            users = session.query(User).all()
+            session.close()
+        except:
+            session = ObjectDB.session
+            users = session.query(User).all()
         return users
 
 
@@ -193,4 +200,20 @@ class HabbitDB(ObjectDB):
             return 
         
         self.user.habbits.pop(self.user.habbits.index(self.habbit))
+        self.session.commit()
+
+
+class UserInfoDB(ObjectDB):
+    user_info = None
+
+    def __init__(self, user_info_obj=None):
+        if user_info_obj:
+            self.user_info = user_info_obj
+    
+    
+    def save(self):
+        if not self.user_info:
+            raise NoUserInfoToSave("user_info attribute was not defined")
+        
+        self.session.add(self.user_info)
         self.session.commit()

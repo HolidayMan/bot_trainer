@@ -1,0 +1,2 @@
+class NoUserInfoToSave(Exception):
+    pass

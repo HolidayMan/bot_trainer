@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from models.plan_model import Plan
 from models.user_model import User
 from models.habbit_model import Habbit
+from models.user_info_model import UserInfo
 
 from bot.states.base_states import States
 from vedis import Vedis
@@ -206,9 +207,11 @@ class HabbitDB(ObjectDB):
 class UserInfoDB(ObjectDB):
     user_info = None
 
-    def __init__(self, user_info_obj=None):
+    def __init__(self, userdb_obj=None, user_info_obj=None):
         if user_info_obj:
             self.user_info = user_info_obj
+        if userdb_obj:
+            self.user = userdb_obj.user
     
     
     def save(self):
@@ -217,3 +220,11 @@ class UserInfoDB(ObjectDB):
         
         self.session.add(self.user_info)
         self.session.commit()
+
+
+    def get_user_info(self):
+        if not self.user:
+            raise NoUserToGetInfo("user attribute was not defined")
+
+        user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).all()
+        return user_info

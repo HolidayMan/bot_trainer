@@ -21,4 +21,4 @@ class UserInfo(Base):
 
 
     def __repr__(self):
-        return "<UserInfo %s>" % self.full_name
+        return "<UserInfo %s>" % self.name

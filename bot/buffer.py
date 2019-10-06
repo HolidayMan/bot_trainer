@@ -22,5 +22,9 @@ class Buffer:
             self.buffer = {}
     
 
+    def add_or_change(self, key, value):
+        self.buffer[key] = value
+
+
     def __del__(self):
         self.save()

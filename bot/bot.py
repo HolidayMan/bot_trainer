@@ -1,11 +1,16 @@
 import telebot
 from bot.states.base_states import States
-from core.db import UserDB, HabbitDB, set_state
+from bot.questionary.questions import Questionary
+from bot.states.questionary_states import QuestionaryStates
+from core.db import UserDB, HabbitDB, set_state, UserInfoDB
 from bot.buffer import Buffer
 try:
     import local_settings.config as config
 except ModuleNotFoundError:
     import prod_settings.config as config
+
+
+bot = telebot.TeleBot(config.TOKEN)
 
 
 def clean_buffer(user_id):
@@ -17,9 +22,6 @@ def clean_buffer(user_id):
             buffer.buffer.pop(key)
 
 
-bot = telebot.TeleBot(config.TOKEN)
-
-
 @bot.message_handler(commands=['start'])
 def cmd_start(message):
     HELP_MESSAGE = "It's a bot"
@@ -28,11 +30,20 @@ def cmd_start(message):
         return
     userdb = UserDB(message.chat)
     habbitdb = HabbitDB(user_db_object=userdb)
+    userinfodb = UserInfoDB(userdb_obj=userdb)
+
+    if not userinfodb.get_user_info():
+        questionary = Questionary()
+        questionary.ask_question(bot, message, questionary.question_1,  QuestionaryStates.S_QUESTION1.value)
+    else:
+        bot.send_message(message.chat.id, HELP_MESSAGE)
+
     for habbit_en_name in config.DEFAULT_HABBITS:
         habbitdb.set_habbit(en_name=habbit_en_name)
-        habbitdb.set_user_habbit()
-    
-    bot.send_message(message.chat.id, HELP_MESSAGE)
+        try:
+            habbitdb.set_user_habbit()
+        except ValueError: # if user already has this habbit
+            pass
 
 
 @bot.message_handler(commands=['cancel'])

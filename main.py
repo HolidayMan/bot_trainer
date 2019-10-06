@@ -1,5 +1,5 @@
 from bot.bot import bot
-from bot.plans.handlers import *
+from bot.handlers import *
 from bot.schedulers import *
 import threading
 import schedule

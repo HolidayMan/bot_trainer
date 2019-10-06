@@ -29,4 +29,7 @@ with open(os.path.join(module_dir, "shedulers.py"), 'w') as file:
 with open(os.path.join(BASE_DIR, 'bot', 'schedulers.py'), 'a') as file:
     file.write("import {}.schedulers\n".format(module_name))
 
+with open(os.path.join(BASE_DIR, 'bot', 'handlers.py'), 'a') as file:
+    file.write("import {}.handlers\n".format(module_name))
+
 

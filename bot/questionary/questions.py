@@ -106,5 +106,5 @@ class Questionary:
 
     def ask_question(self, bot_instance, message, question, state):
         chat_id = message.chat.id
-        bot_instance.send_message(chat_id=chat_id, text=question)
         set_state(chat_id, state)
+        return bot_instance.send_message(chat_id=chat_id, text=question)

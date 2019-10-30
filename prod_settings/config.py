@@ -7,3 +7,10 @@ STATES_FILE = 'states.vdb'
 TOKEN = "123456789:your_token"
 
 DEFAULT_HABBITS = ["planning"]
+
+
+HABBITS = [
+    'bot.plans',
+    'bot.habbits', 
+    'bot.questionary',
+]

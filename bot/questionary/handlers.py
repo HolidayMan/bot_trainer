@@ -15,26 +15,28 @@ from .phrases import *
 questionary = Questionary()
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION1.value)
-def handle_answer_1(message):
+def handle_answer_1(message) -> tuple:
     chat_id = message.chat.id
-    name_pattern = r"^([a-zA-Z]| )+$"
+    if message.text == None:
+        message.text = ''
+    name_pattern = r"^([a-zA-Z]|[а-яА-Я]| )+$"
     if re.match(name_pattern, message.text):
         userinfo = UserInfo()
         userinfo.name = message.text
         buffer = Buffer()
         buffer.add_or_change(str(chat_id)+"questionary", userinfo)
         
-        bot.send_message(chat_id=chat_id, text=GREAT)
-
-        questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_2, state=QuestionaryStates.S_QUESTION2.value)
+        return bot.send_message(chat_id=chat_id, text=GREAT), questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_2, state=QuestionaryStates.S_QUESTION2.value)
     else:
-        bot.send_message(chat_id=chat_id, text=PHRASE_NAME_MUST_CONTAIN_JUST_LETTERS)
+        return (bot.send_message(chat_id=chat_id, text=PHRASE_NAME_MUST_CONTAIN_JUST_LETTERS), )
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION2.value)
-def handle_answer_1(message):
+def handle_answer_2(message):
     chat_id = message.chat.id
-    surname_pattern = r"^([a-zA-Z]| )+$"
+    if message.text == None:
+        message.text = ''
+    surname_pattern = r"^([a-zA-Z]|[а-яА-Я]| )+$"
     if re.match(surname_pattern, message.text):
         buffer_key = str(chat_id)+"questionary"
         buffer = Buffer()
@@ -42,11 +44,11 @@ def handle_answer_1(message):
         userinfo.surname = message.text
         buffer.add_or_change(str(chat_id)+"questionary", userinfo)
         
-        bot.send_message(chat_id=chat_id, text=GREAT)
+        
 
-        questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_3, state=QuestionaryStates.S_QUESTION3.value)
+        return bot.send_message(chat_id=chat_id, text=GREAT), questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_3, state=QuestionaryStates.S_QUESTION3.value)
     else:
-        bot.send_message(chat_id=chat_id, text=PHRASE_SURNAME_MUST_CONTAIN_JUST_LETTERS)
+        return bot.send_message(chat_id=chat_id, text=PHRASE_SURNAME_MUST_CONTAIN_JUST_LETTERS),
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION3.value)

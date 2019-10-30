@@ -10,7 +10,7 @@ DEFAULT_HABBITS = ["planning"]
 
 
 HABBITS = [
-    'bot.plans',
-    'bot.habbits', 
-    'bot.questionary',
+    'plans',
+    'habbits', 
+    'questionary',
 ]

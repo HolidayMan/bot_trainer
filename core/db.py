@@ -149,6 +149,15 @@ def get_current_state(user_id):
             return States.S_ENTERCOMMAND.value
 
 
+def set_cmd_state(user_id):
+    with Vedis(config.STATES_FILE) as db:
+        try:
+            db[user_id] = States.S_ENTERCOMMAND.value
+            return True
+        except:
+            return False
+
+
 class HabbitDB(ObjectDB):
     def __init__(self, user_db_object=None, instance=None, en_name=None, ru_name=None):
         if user_db_object:

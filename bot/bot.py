@@ -3,7 +3,7 @@ from bot.states.base_states import States
 from bot.questionary.questions import Questionary
 from bot.states.questionary_states import QuestionaryStates
 from core.db import UserDB, HabbitDB, set_state, UserInfoDB
-from bot.buffer import Buffer
+from bot.buffer import Buffer, clean_buffer
 try:
     import local_settings.config as config
 except ModuleNotFoundError:

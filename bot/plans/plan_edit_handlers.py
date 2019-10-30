@@ -1,8 +1,8 @@
-from bot.bot import bot, clean_buffer
+from bot.bot import bot
 from telebot import types
 from bot.states.plan_states import PlanStates
 from bot.states.base_states import States
-from bot.buffer import Buffer
+from bot.buffer import Buffer, clean_buffer
 from core.db import set_state, PlanDB, UserDB, get_current_state
 from models.plan_model import Plan
 from core.utils.paginator import Paginator

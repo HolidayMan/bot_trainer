@@ -3,6 +3,7 @@ from .handlers import *
 from telebot import types
 import json
 import time
+from datetime import time as new_time
 
 from bot.buffer import Buffer
 from core.db import set_cmd_state
@@ -82,6 +83,47 @@ class TestQuestionaryHanlers(unittest.TestCase):
         self.assertEqual(answer[0].text, PHRASE_SURNAME_MUST_CONTAIN_JUST_LETTERS)
 
 
+    def test_handler_3(self):
+        self.message.text = "15"
+        answer = handle_answer_3(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, GREAT)
+        self.assertEqual(answer[1].text, self.questionary.question_4)
+
+        self.message.text = "130"
+        answer = handle_answer_3(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, AGE_MUST_BE_A_NUMBER_AND_BETWEEN)
+
+        self.message.text = "-1000"
+        answer = handle_answer_3(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, AGE_MUST_BE_A_NUMBER_AND_BETWEEN)
+
+
+    def test_handler_4(self):
+        self.message.text = "23:24:24"
+        answer = handle_answer_4(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, GREAT)
+        self.assertEqual(answer[1].text, self.questionary.question_5)
+        chat_id = self.message.chat.id
+        buffer_key = str(chat_id)+"questionary"
+        self.buffer.update()
+        userinfo = self.buffer.get(buffer_key)
+        self.assertEqual(userinfo.planning_time, new_time(23, 24, 24))
+
+        self.message.text = "hello"
+        answer = handle_answer_4(self.message) 
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, TIME_MUST_BE_FORMAT)
+
+        self.message.text = "25:00:00"
+        answer = handle_answer_4(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, INVALID_TIME_FORMAT)
+
+
     def tearDown(self):
         time.sleep(0.3)
         for answer in self.answers:
@@ -91,7 +133,6 @@ class TestQuestionaryHanlers(unittest.TestCase):
                 pass
 
 
-
     @classmethod
     def tearDownClass(cls):
         set_cmd_state(cls.message.chat.id)
@@ -99,7 +140,5 @@ class TestQuestionaryHanlers(unittest.TestCase):
         cls.buffer.save()
         
         
-    
-
 if __name__ == "__main__":
 	unittest.main()

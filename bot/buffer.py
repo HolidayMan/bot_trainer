@@ -20,6 +20,10 @@ class Buffer:
                 self.buffer = pickle.load(file)
         except FileNotFoundError:
             self.buffer = {}
+
+
+    def update(self):
+        self.upload()
     
 
     def add_or_change(self, key, value):
@@ -38,6 +42,14 @@ class Buffer:
                 self.buffer.pop(key)
 
 
+    def __setitem__(self, key, value):
+        self.buffer[key] = value
+
+
+    def __getitem__(self, key):
+        return self.buffer[key]
+
+
     def __del__(self):
         self.save()
 
@@ -45,7 +57,7 @@ class Buffer:
 def clean_buffer(user_id):
     buffer = Buffer()
     for key in buffer.buffer.copy().keys():
-        if key.startswith(user_id):
+        if key.startswith(str(user_id)):
             buffer.buffer.pop(key)
 
 

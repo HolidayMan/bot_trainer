@@ -26,6 +26,14 @@ with open(os.path.join(module_dir, "shedulers.py"), 'w') as file:
     file.write("import schedule\n")
 
 
+with open(os.path.join(module_dir, "tests.py"), 'w') as file:
+    file.write('''import unittest
+from .handlers import *
+from telebot import types
+import json
+    ''')
+
+
 with open(os.path.join(BASE_DIR, 'bot', 'schedulers.py'), 'a') as file:
     file.write("import {}.schedulers\n".format(module_name))
 

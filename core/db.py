@@ -216,11 +216,13 @@ class HabbitDB(ObjectDB):
 class UserInfoDB(ObjectDB):
     user_info = None
 
-    def __init__(self, userdb_obj=None, user_info_obj=None):
+    def __init__(self, userdb_obj=None, user_info_obj=None, user=None):
         if user_info_obj:
             self.user_info = user_info_obj
         if userdb_obj:
             self.user = userdb_obj.user
+        if user:
+            self.user = user
     
     
     def save(self):
@@ -235,5 +237,5 @@ class UserInfoDB(ObjectDB):
         if not self.user:
             raise NoUserToGetInfo("user attribute was not defined")
 
-        user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).all()
+        user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).first()
         return user_info

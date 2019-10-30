@@ -2,7 +2,7 @@ import telebot
 from bot.states.base_states import States
 from bot.questionary.questions import Questionary
 from bot.states.questionary_states import QuestionaryStates
-from core.db import UserDB, HabbitDB, set_state, UserInfoDB
+from core.db import UserDB, HabbitDB, set_state, UserInfoDB, get_current_state
 from bot.buffer import Buffer, clean_buffer
 try:
     import local_settings.config as config
@@ -48,8 +48,11 @@ def cmd_start(message):
 
 @bot.message_handler(commands=['cancel'])
 def cmd_cancel(message):
-    set_state(message.chat.id, States.S_ENTERCOMMAND.value)
-    bot.send_message(message.chat.id, "Введите команду")
+    if get_current_state(message.chat.id) in [state.value for state in QuestionaryStates]:
+        bot.send_message(message.chat.id, "Закончите анкетирование.")
+    else:
+        set_state(message.chat.id, States.S_ENTERCOMMAND.value)
+        bot.send_message(message.chat.id, "Введите команду")
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "cancel")

@@ -96,10 +96,10 @@ class TestQuestionaryHanlers(unittest.TestCase):
     def tearDownClass(cls):
         set_cmd_state(cls.message.chat.id)
         cls.buffer.clean_for_user(cls.message.chat.id)
+        cls.buffer.save()
         
         
     
 
 if __name__ == "__main__":
-
 	unittest.main()

@@ -124,6 +124,48 @@ class TestQuestionaryHanlers(unittest.TestCase):
         self.assertEqual(answer[0].text, INVALID_TIME_FORMAT)
 
 
+    def test_handler_5(self):
+        self.message.text = "Answer 5"
+        answer = handle_answer_5(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, GREAT)
+        self.assertEqual(answer[1].text, self.questionary.question_6)
+
+        chat_id = self.message.chat.id
+        buffer_key = str(chat_id)+"questionary"
+        self.buffer.update()
+        userinfo = self.buffer.get(buffer_key)
+        self.assertEqual(userinfo.question1, "Answer 5")
+
+
+    def test_handler_6(self):
+        self.message.text = "Answer 6"
+        answer = handle_answer_6(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, GREAT)
+        self.assertEqual(answer[1].text, self.questionary.question_7)
+
+        chat_id = self.message.chat.id
+        buffer_key = str(chat_id)+"questionary"
+        self.buffer.update()
+        userinfo = self.buffer.get(buffer_key)
+        self.assertEqual(userinfo.question2, "Answer 6")
+
+
+    def test_handler_7(self):
+        self.message.text = "Answer 7"
+        answer = handle_answer_7(self.message)
+        self.answers.extend(answer)
+        self.assertEqual(answer[0].text, GREAT)
+        self.assertEqual(answer[1].text, self.questionary.question_8)
+
+        chat_id = self.message.chat.id
+        buffer_key = str(chat_id)+"questionary"
+        self.buffer.update()
+        userinfo = self.buffer.get(buffer_key)
+        self.assertEqual(userinfo.question3, "Answer 7")
+
+
     def tearDown(self):
         time.sleep(0.3)
         for answer in self.answers:

@@ -102,7 +102,7 @@ def handle_answer_4(message: types.Message) -> tuple:
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION5.value) # must be edited for working with time
-def handle_answer_5(message):
+def handle_answer_5(message: types.Message) -> tuple:
     chat_id = message.chat.id
     if True: # here will be validating
         buffer_key = str(chat_id)+"questionary"
@@ -111,15 +111,13 @@ def handle_answer_5(message):
         userinfo.question1 = message.text
         buffer.add_or_change(str(chat_id)+"questionary", userinfo)
         
-        bot.send_message(chat_id=chat_id, text=GREAT)
-
-        questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_6, state=QuestionaryStates.S_QUESTION6.value)
+        return bot.send_message(chat_id=chat_id, text=GREAT), questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_6, state=QuestionaryStates.S_QUESTION6.value)
     else:
-        bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN)
+        return bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN),
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION6.value) # must be edited for working with time
-def handle_answer_6(message):
+def handle_answer_6(message: types.Message) -> tuple:
     chat_id = message.chat.id
     if True: # here will be validating
         buffer_key = str(chat_id)+"questionary"
@@ -128,11 +126,9 @@ def handle_answer_6(message):
         userinfo.question2 = message.text
         buffer.add_or_change(str(chat_id)+"questionary", userinfo)
         
-        bot.send_message(chat_id=chat_id, text=GREAT)
-
-        questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_7, state=QuestionaryStates.S_QUESTION7.value)
+        return bot.send_message(chat_id=chat_id, text=GREAT), questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_7, state=QuestionaryStates.S_QUESTION7.value)
     else:
-        bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN)
+        return bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN),
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION7.value) # must be edited for working with time
@@ -144,12 +140,10 @@ def handle_answer_7(message):
         userinfo = buffer.buffer.get(buffer_key)
         userinfo.question3 = message.text
         buffer.add_or_change(str(chat_id)+"questionary", userinfo)
-        
-        bot.send_message(chat_id=chat_id, text=GREAT)
 
-        questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_8, state=QuestionaryStates.S_QUESTION8.value)
+        return bot.send_message(chat_id=chat_id, text=GREAT), questionary.ask_question(bot_instance=bot, message=message, question=questionary.question_8, state=QuestionaryStates.S_QUESTION8.value)
     else:
-        bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN)
+        return bot.send_message(chat_id=chat_id, text=AGE_MUST_BE_A_NUMBER_AND_BETWEEN),
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == QuestionaryStates.S_QUESTION8.value) # must be edited for working with time

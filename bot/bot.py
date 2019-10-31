@@ -13,15 +13,6 @@ except ModuleNotFoundError:
 bot = telebot.TeleBot(config.TOKEN)
 
 
-def clean_buffer(user_id):
-    if type(user_id) == int:
-        user_id = str(user_id)
-    buffer = Buffer()
-    for key in buffer.buffer.copy().keys():
-        if key.startswith(user_id):
-            buffer.buffer.pop(key)
-
-
 @bot.message_handler(commands=['start'])
 def cmd_start(message):
     HELP_MESSAGE = "It's a bot"

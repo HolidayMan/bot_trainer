@@ -1,6 +1,10 @@
 import unittest
 import importlib
 import sys
+import os
+
+os.environ["TEST"] = "true"
+
 if len(sys.argv) > 1:
     modules = sys.argv[1:]
     sys.argv = sys.argv[:1]
@@ -14,6 +18,8 @@ else:
 
     imports = [importlib.import_module(f'bot.{habbit}.tests') for habbit in HABBITS]
 [globals().update({name: class_}) for module in imports for name, class_ in vars(module).items() if name.startswith('Test')]
+
+
 
 if __name__ == "__main__":
     unittest.main()

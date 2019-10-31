@@ -1,9 +1,14 @@
+import threading
+import schedule
+import os
+import time
+
+os.environ["TEST"] = "false"
+
 from bot.bot import bot
 from bot.handlers import *
 from bot.schedulers import *
-import threading
-import schedule
-import time
+
 
 def check_schedulers():
     while True:

@@ -10,9 +10,12 @@ def get_all_users():
     return habbitdb.get_all_users()
 
 
-def remind2plan(users):
-    for user in users:
-        add_plan(chat_id=user.tg_id)
+def remind2plan(users=None, chat_id=None):
+    if users:
+        for user in users:
+            add_plan(chat_id=user.tg_id)
+    elif chat_id:
+        add_plan(chat_id=chat_id)
         
 
 if os.environ["TEST"] == "false":

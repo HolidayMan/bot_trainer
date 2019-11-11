@@ -164,7 +164,7 @@ def handle_answer8(message):
         
         bot.send_message(chat_id=chat_id, text=END_OF_QUESTIONARY)
 
-        schedule.every().day.at(userinfo.planning_time.strftime('%H:%M:%S')).do(remind2plan, users=(userdb.user,))
+        schedule.every().day.at(userinfo.planning_time.strftime('%H:%M:%S')).do(remind2plan, chat_id=userdb.user.tg_id)
         
         set_state(chat_id, States.S_ENTERCOMMAND)
 

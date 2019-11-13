@@ -10,7 +10,7 @@ class Studying(Base):
 
     id = Column(Integer, primary_key=True)
     state = Column(Integer)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, unique=True)
     user = relationship("User", backref=backref("studying", cascade="all,delete"), order_by="User.id")
 
 

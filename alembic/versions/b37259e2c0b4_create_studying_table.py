@@ -21,7 +21,7 @@ def upgrade():
         'studying',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('state', sa.Integer),
-        sa.Column('user_id', sa.Integer, nullable=False),
+        sa.Column('user_id', sa.Integer, nullable=False, unique=True),
     )
 
 

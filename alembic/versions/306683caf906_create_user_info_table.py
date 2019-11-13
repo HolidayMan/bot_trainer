@@ -22,6 +22,7 @@ def upgrade():
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.String(64), nullable=False, unique=False),
         sa.Column('surname', sa.String(64), nullable=False, unique=False),
+        sa.Column('registration_date', sa.DateTime, nullable=True, unique=False),
         sa.Column('age', sa.Integer(), nullable=False, unique=False),
         sa.Column('planning_time', sa.Time(), nullable=False, unique=False),
         sa.Column('question1', sa.String(64), nullable=False, unique=False),

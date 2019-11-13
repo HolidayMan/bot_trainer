@@ -3,6 +3,7 @@ from models.plan_model import Plan
 from models.user_model import User
 from models.habbit_model import Habbit
 from models.user_info_model import UserInfo
+from models.studying_model import Studying
 from models.base import Base, habbits2create
 from sqlalchemy.orm import sessionmaker
 

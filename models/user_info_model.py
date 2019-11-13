@@ -1,10 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Time, DateTime
 from sqlalchemy.orm import relationship, backref
 from .base import Base
-import datetime
-
-def get_ua_time():
-    return datetime.datetime.utcnow() + datetime.timedelta(hours=3)
+from core.utils.time import get_ua_time
 
 class UserInfo(Base):
 

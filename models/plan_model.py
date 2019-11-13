@@ -2,12 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 from .base import Base, habbits2create
 from .habbit_model import Habbit
+from core.utils.time import get_ua_time
 import datetime
 import calendar
-
-
-def get_ua_time():
-    return datetime.datetime.utcnow() + datetime.timedelta(hours=3)
 
 
 class Plan(Base):

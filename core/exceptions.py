@@ -4,3 +4,7 @@ class NoUserInfoToSave(Exception):
 
 class NoUserToGetInfo(Exception):
     pass
+
+
+class NoStudyingToSave(Exception):
+    pass

@@ -1,14 +1,14 @@
 from sqlalchemy.orm import sessionmaker
-
-from models.plan_model import Plan
-from models.user_model import User
-from models.habbit_model import Habbit
-from models.user_info_model import UserInfo
-
-from bot.states.base_states import States
 from vedis import Vedis
 
-from .exceptions import *
+from bot.states.base_states import States
+from models.habbit_model import Habbit
+from models.plan_model import Plan
+from models.studying_model import Studying
+from models.user_info_model import UserInfo
+from models.user_model import User
+
+import core.exceptions as exc
 
 try:
     import local_settings.config as config
@@ -227,7 +227,7 @@ class UserInfoDB(ObjectDB):
     
     def save(self):
         if not self.user_info:
-            raise NoUserInfoToSave("user_info attribute was not defined")
+            raise exc.NoUserInfoToSave("user_info attribute was not defined")
         
         self.session.add(self.user_info)
         self.session.commit()
@@ -235,7 +235,48 @@ class UserInfoDB(ObjectDB):
 
     def get_user_info(self):
         if not self.user:
-            raise NoUserToGetInfo("user attribute was not defined")
+            raise exc.NoUserToGetInfo("user attribute was not defined")
 
         user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).first()
         return user_info
+
+
+class StudyingDB(ObjectDB):
+    studying = None
+
+    def __init__(self, userdb_obj=None, user=None, studying_obj=None, state=None):
+        if userdb_obj:
+            self.user = userdb_obj.user
+        if user:
+            self.user = user
+        if user and (state is not None):
+            self.user = user
+            query = self.session.query(Studying).filter(Studying.user_id == self.user.id)
+            query_list = query.all()
+            if query_list:
+                self.studying = query_list[0]
+                if self.studying.state != state:
+                    self.studying.state = state
+                    self.save()
+            else:
+                self.studying = Studying(user=self.user, state=state)
+                self.save()
+        elif studying_obj:
+            self.studying = studying_obj
+            self.user = studying_obj.user
+
+
+    def save(self):
+        if not self.studying:
+            raise exc.NoStudyingToSave("studying attribute was not defined")
+        
+        self.session.add(self.studying)
+        self.session.commit()
+
+
+    def get_user_studying(self):
+        if not self.user:
+            raise exc.NoUserToGetInfo("user attribute was not defined")
+
+        self.studying = self.session.query(Studying).filter(Studying.user_id == self.user.id).first()
+        return self.studying

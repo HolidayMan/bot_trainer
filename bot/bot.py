@@ -1,9 +1,11 @@
 import telebot
-from bot.states.base_states import States
-from bot.questionary.questions import Questionary
-from bot.states.questionary_states import QuestionaryStates
-from core.db import UserDB, HabbitDB, set_state, UserInfoDB, get_current_state
+
 from bot.buffer import Buffer, clean_buffer
+from bot.questionary.questions import Questionary
+from bot.states.base_states import States
+from bot.states.questionary_states import QuestionaryStates
+from core.db import HabbitDB, UserDB, UserInfoDB, get_current_state, set_state
+
 try:
     import local_settings.config as config
 except ModuleNotFoundError:
@@ -51,4 +53,3 @@ def cancel(call):
     set_state(call.message.chat.id, States.S_ENTERCOMMAND.value)
     clean_buffer(call.message.chat.id)
     bot.delete_message(call.message.chat.id, call.message.message_id)
-    

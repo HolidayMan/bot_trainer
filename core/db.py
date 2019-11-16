@@ -213,7 +213,7 @@ class HabbitDB(ObjectDB):
         self.session.commit()
 
 
-class UserInfoDB(ObjectDB):
+class UserInfoDB(ObjectDB): # CRU
     user_info = None
 
     def __init__(self, userdb_obj=None, user_info_obj=None, user=None):
@@ -221,8 +221,10 @@ class UserInfoDB(ObjectDB):
             self.user_info = user_info_obj
         if userdb_obj:
             self.user = userdb_obj.user
+            self.user_info = self.get_user_info()
         if user:
             self.user = user
+            self.user_info = self.get_user_info()
     
     
     def save(self):
@@ -236,12 +238,12 @@ class UserInfoDB(ObjectDB):
     def get_user_info(self):
         if not self.user:
             raise exc.NoUserToGetInfo("user attribute was not defined")
-
+    
         user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).first()
         return user_info
 
 
-class StudyingDB(ObjectDB):
+class StudyingDB(ObjectDB): # CRU
     studying = None
 
     def __init__(self, userdb_obj=None, user=None, studying_obj=None, state=None):

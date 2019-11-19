@@ -20,3 +20,7 @@ class NoProjectDefinedError(Exception):
 
 class NoTaskDefinedError(Exception):
     pass
+
+
+class NoLessonWasFound(Exception):
+    pass

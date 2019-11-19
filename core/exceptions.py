@@ -1,3 +1,7 @@
+class NoPlanDefinedError(Exception):
+    pass
+
+
 class NoUserInfoToSave(Exception):
     pass
 
@@ -7,4 +11,12 @@ class NoUserToGetInfo(Exception):
 
 
 class NoStudyingToSave(Exception):
+    pass
+
+
+class NoProjectDefinedError(Exception):
+    pass
+
+
+class NoTaskDefinedError(Exception):
     pass

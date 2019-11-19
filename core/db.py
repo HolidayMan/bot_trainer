@@ -7,6 +7,9 @@ from models.plan_model import Plan
 from models.studying_model import Studying
 from models.user_info_model import UserInfo
 from models.user_model import User
+from models.project_model import Project
+from models.task_model import Task
+from models.performer_model import Performer
 
 import core.exceptions as exc
 
@@ -104,8 +107,7 @@ class PlanDB(ObjectDB):
     
     def mark_done(self):
         if not self.plan:
-            print("\n\n\nHello\n\n\n")
-            return
+            raise exc.NoPlanDefinedError("self.plan was not defined")
         self.plan.status = Plan.STATUS_DONE
         self.session.commit()
     
@@ -282,3 +284,142 @@ class StudyingDB(ObjectDB): # CRU
 
         self.studying = self.session.query(Studying).filter(Studying.user_id == self.user.id).first()
         return self.studying
+
+
+class ProjectDB(ObjectDB):
+    project = None
+
+    def __init__(self, user_db_object=None, instance=None):
+        if user_db_object:
+            self.user = user_db_object.user
+        if instance:
+            self.project = self.session.query(Project).filter(Project.id == instance.id).first()
+
+
+    def create(self, name=None, date_start=None, date_end=None, user=None):
+        if not self.project:
+            new_project = Project(name=name, date_start=date_start, date_end=date_end, user=self.user if not user else user)
+        else:
+            new_project = self.project
+        self.session.add(new_project)
+        self.session.commit()
+        return new_project
+
+    
+    def get_all_projects(self):
+        projects_query = self.session.query(Project).join(Project.user).filter(User.id == self.user.id)
+        return projects_query.order_by(Project.date_start).all()
+
+    
+    def mark_completed(self):
+        if not self.project:
+            raise exc.NoProjectDefinedError("self.project was not defined")
+        self.project.completed = True
+        self.session.commit()
+
+
+    def mark_not_completed(self):
+        if not self.project:
+            raise exc.NoProjectDefinedError("self.project was not defined")
+        self.project.completed = False
+        self.session.commit()
+
+
+    def delete(self):
+        if not self.project:
+            return
+        self.session.delete(self.project)
+        self.session.commit()
+
+
+class TaskDB(ObjectDB):
+    task = None
+
+    def __init__(self, user_db_object=None, project=None, instance=None):
+        if user_db_object:
+            self.user = user_db_object.user
+        if project:
+            self.project = project
+        if instance:
+            self.task = self.session.query(Task).filter(Task.id == instance.id).first()
+
+
+    def create(self, name=None, date_start=None, duration=None, permormers=None, comments=None, project=None):
+        if not self.task:
+            new_task = Project(name=name, date_start=date_start, duration=duration, project=project)
+        else:
+            new_task = self.task
+        self.session.add(new_task)
+        self.session.commit()
+        return new_task
+
+    
+    def get_all_tasks(self):
+        tasks_query = self.session.query(Task).join(Task.project).filter(Project.id == self.project.id)
+        return tasks_query.order_by(Task.date_start).all()
+
+    
+    def mark_completed(self):
+        if not self.task:
+            raise exc.NoTaskDefinedError("self.task was not defined")
+        self.task.completed = True
+        self.session.commit()
+
+
+    def mark_not_completed(self):
+        if not self.task:
+            raise exc.NoTaskDefinedError("self.task was not defined")
+        self.task.completed = False
+        self.session.commit()
+
+
+    def get_performers(self):
+        if not self.task:
+            raise exc.NoTaskDefinedError("self.task was not defined")
+        try:
+            return self.task.performers
+        except:
+            self = TaskDB(instance=self.task)
+            return self.task.performers
+
+
+    def delete(self):
+        if not self.task:
+            return
+        self.session.delete(self.task)
+        self.session.commit()
+
+
+class PerformerDB(ObjectDB):
+    performer = None
+
+    def __init__(self, user_db_object=None, task=None, instance=None):
+        if user_db_object:
+            self.user = user_db_object.user
+        if task:
+            self.task = task
+        if instance:
+            self.performer = self.session.query(Performer).filter(Performer.id == instance.id).first()
+
+
+    def create(self, name=None, phone_number=None, comments=None, user=None):
+        if not self.performer:
+            new_performer = Performer(name=name, phone_number=phone_number, comments=comments, user=user)
+        else:
+            new_performer = self.performer
+        self.session.add(new_performer)
+        self.session.commit()
+        return new_performer
+
+    
+    def get_all_tasks(self):
+        performers_query = self.session.query(Performer).join(Performer.task).filter(Task.id == self.task.id)
+        return performers_query.order_by(Performer.id).all()
+
+
+    def delete(self):
+        if not self.performer:
+            return
+        self.session.delete(self.performer)
+        self.session.commit()
+        

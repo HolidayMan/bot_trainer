@@ -16,5 +16,9 @@ class Project(Base):
     user = relationship("User", backref=backref("projects", cascade="all,delete"), order_by="User.id")
 
 
+    def __eq__(self, other):
+        return all([getattr(self, attr) == getattr(other, attr) for attr, value in list(self.__dict__.items())[1:]])
+
+
     def __repr__(self):
         return "<Project %s>" % self.name

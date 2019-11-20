@@ -2,15 +2,15 @@ class NoPlanDefinedError(Exception):
     pass
 
 
-class NoUserInfoToSave(Exception):
+class NoUserInfoToSaveError(Exception):
     pass
 
 
-class NoUserToGetInfo(Exception):
+class NoUserToGetInfoError(Exception):
     pass
 
 
-class NoStudyingToSave(Exception):
+class NoStudyingToSaveError(Exception):
     pass
 
 
@@ -22,5 +22,9 @@ class NoTaskDefinedError(Exception):
     pass
 
 
-class NoLessonWasFound(Exception):
+class NoLessonWasFoundError(Exception):
+    pass
+
+
+class DateParseError(Exception):
     pass

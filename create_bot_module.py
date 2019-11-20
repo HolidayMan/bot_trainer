@@ -22,7 +22,7 @@ with open(os.path.join(module_dir, 'description.py'), 'w'):
     pass
 
 
-with open(os.path.join(module_dir, "shedulers.py"), 'w') as file:
+with open(os.path.join(module_dir, "schedulers.py"), 'w') as file:
     file.write("import schedule\n")
 
 

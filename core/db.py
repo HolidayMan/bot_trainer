@@ -231,7 +231,7 @@ class UserInfoDB(ObjectDB): # CRU
     
     def save(self):
         if not self.user_info:
-            raise exc.NoUserInfoToSave("user_info attribute was not defined")
+            raise exc.NoUserInfoToSaveError("user_info attribute was not defined")
         
         self.session.add(self.user_info)
         self.session.commit()
@@ -239,7 +239,7 @@ class UserInfoDB(ObjectDB): # CRU
 
     def get_user_info(self):
         if not self.user:
-            raise exc.NoUserToGetInfo("user attribute was not defined")
+            raise exc.NoUserToGetInfoError("user attribute was not defined")
     
         user_info = self.session.query(UserInfo).filter(UserInfo.user_id == self.user.id).first()
         return user_info
@@ -272,7 +272,7 @@ class StudyingDB(ObjectDB): # CRU
 
     def save(self):
         if not self.studying:
-            raise exc.NoStudyingToSave("studying attribute was not defined")
+            raise exc.NoStudyingToSaveError("studying attribute was not defined")
         
         self.session.add(self.studying)
         self.session.commit()
@@ -280,7 +280,7 @@ class StudyingDB(ObjectDB): # CRU
 
     def get_user_studying(self):
         if not self.user:
-            raise exc.NoUserToGetInfo("user attribute was not defined")
+            raise exc.NoUserToGetInfoError("user attribute was not defined")
 
         self.studying = self.session.query(Studying).filter(Studying.user_id == self.user.id).first()
         return self.studying
@@ -293,7 +293,9 @@ class ProjectDB(ObjectDB):
         if user_db_object:
             self.user = user_db_object.user
         if instance:
-            self.project = self.session.query(Project).filter(Project.id == instance.id).first()
+            self.project = self.session.query(Project).filter(Project.id == instance.id).all()
+            if self.project == []:
+                self.project = instance
 
 
     def create(self, name=None, date_start=None, date_end=None, user=None):

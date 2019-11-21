@@ -52,7 +52,7 @@ class TestQuestionaryHanlers(unittest.TestCase):
 
 
     def test_project_name_handler(self):
-        self.message.text = "Project 1"
+        self.message.text = "Тестовый проект"
         answer = project_name_handler(self.message)
         self.answers.append(answer)
         self.assertEqual(get_current_state(384612009), ChecklistStates.STATE_MCL_2.value)
@@ -64,9 +64,12 @@ class TestQuestionaryHanlers(unittest.TestCase):
 
     def test_project_date_handler(self):
         answer = self.send_message(project_date_handler, "Shit")
-        self.assertEqual(answer[0], ph.PROJECT_ADDED)
+        self.assertEqual(answer[0].text, ph.INCORRECT_DATE)
+
+        answer = self.send_message(project_date_handler, "21.11.19-30.11.19")
         self.assertEqual(get_current_state(384612009), ChecklistStates.STATE_MCL_3.value)
-        self.assertEqual(answer[1], get_lt_from_number(3).strip())
+        self.assertEqual(answer[0].text, ph.PROJECT_ADDED)
+        self.assertEqual(answer[1].text, get_lt_from_number(3).strip())
 
 
     def tearDown(self):

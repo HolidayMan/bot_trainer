@@ -345,12 +345,16 @@ class TaskDB(ObjectDB):
         if project:
             self.project = project
         if instance:
-            self.task = self.session.query(Task).filter(Task.id == instance.id).first()
+            task = self.session.query(Task).filter(Task.id == instance.id).all()
+            if task == []:
+                self.task = instance
+            else:
+                self.task = task[0]
 
 
     def create(self, name=None, date_start=None, duration=None, permormers=None, comments=None, project=None):
         if not self.task:
-            new_task = Project(name=name, date_start=date_start, duration=duration, project=project)
+            new_task = Task(name=name, date_start=date_start, duration=duration, project=project)
         else:
             new_task = self.task
         self.session.add(new_task)
@@ -359,7 +363,6 @@ class TaskDB(ObjectDB):
 
     
     def get_all_tasks(self):
-        print(type(self.project), '\n\n\n\n\n\n\n\n\n')
         tasks_query = self.session.query(Task).join(Task.project).filter(Project.id == self.project.id)
         return tasks_query.order_by(Task.date_start).all()
 
@@ -388,6 +391,12 @@ class TaskDB(ObjectDB):
             return self.task.performers
 
 
+    def save(self):
+        if not self.task:
+            raise exc.NoTaskDefinedError("self.task was not defined")
+        self.session.commit()
+
+
     def delete(self):
         if not self.task:
             return
@@ -404,7 +413,11 @@ class PerformerDB(ObjectDB):
         if task:
             self.task = task
         if instance:
-            self.performer = self.session.query(Performer).filter(Performer.id == instance.id).first()
+            performer = self.session.query(Performer).filter(Performer.id == instance.id).all()
+            if performer == []:
+                self.performer = instance
+            else:
+                self.performer = performer[0]
 
 
     def create(self, name=None, phone_number=None, comments=None, user=None):
@@ -417,7 +430,7 @@ class PerformerDB(ObjectDB):
         return new_performer
 
     
-    def get_all_tasks(self):
+    def get_all_performers(self):
         performers_query = self.session.query(Performer).join(Performer.task).filter(Task.id == self.task.id)
         return performers_query.order_by(Performer.id).all()
 

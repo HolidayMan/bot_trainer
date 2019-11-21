@@ -4,7 +4,7 @@ from core.exceptions import NoLessonWasFoundError
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 MICROLESSONS_DIR = os.path.join(BASE_DIR, 'bot/checklist/microlessons')
-MICROLESSONS = {i: name for i, name in enumerate(os.listdir(MICROLESSONS_DIR), start=1) if name.startswith('lesson')}
+MICROLESSONS = {i: name for i, name in enumerate(sorted(os.listdir(MICROLESSONS_DIR), key=lambda s: int(s.replace('lesson', '').replace('.txt', ''))), start=1) if name.startswith('lesson')}
 
 
 def get_lesson_file(number: int) -> str: 

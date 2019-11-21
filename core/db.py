@@ -293,9 +293,11 @@ class ProjectDB(ObjectDB):
         if user_db_object:
             self.user = user_db_object.user
         if instance:
-            self.project = self.session.query(Project).filter(Project.id == instance.id).all()
-            if self.project == []:
+            project = self.session.query(Project).filter(Project.id == instance.id).all()
+            if project == []:
                 self.project = instance
+            else:
+                self.project = project[0]
 
 
     def create(self, name=None, date_start=None, date_end=None, user=None):
@@ -357,6 +359,7 @@ class TaskDB(ObjectDB):
 
     
     def get_all_tasks(self):
+        print(type(self.project), '\n\n\n\n\n\n\n\n\n')
         tasks_query = self.session.query(Task).join(Task.project).filter(Project.id == self.project.id)
         return tasks_query.order_by(Task.date_start).all()
 

@@ -12,6 +12,7 @@ TOKEN = "123456789:your_token"
 DEFAULT_HABBITS = ["planning"]
 
 ARTICLES_PATH = os.path.join(BASE_DIR, 'articles')
+TMP_PATH = os.path.join(BASE_DIR, 'tmp')
 
 HABBITS = [
     'plans',

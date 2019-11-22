@@ -11,7 +11,7 @@ from bot.buffer import Buffer
 from core.utils.paginator import Paginator
 from models.task_model import Task
 from core.exceptions import DateParseError
-
+from .generate_diagram import generate_diagram
 
 # def parse_date(date_string):
 #     date_pattern = r"\d{2}\.\d{2}\.\d{2}"
@@ -105,6 +105,8 @@ def paginate_tasks(project, tasks, page=1):
         next_page_button
     )
 
+    keyboard.row(types.InlineKeyboardButton(text="📊", callback_data="generate_diagram"))
+
     return message_text, keyboard
 
 
@@ -165,7 +167,6 @@ def choose_project(call: types.CallbackQuery, send_new=False):
     buffer = Buffer()
     buffer_key = str(call.message.chat.id) + "chosen_project"
     buffer.add_or_change(buffer_key, project)
-    print(message_text, '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
     if send_new:
         return bot.send_message(chat_id=call.message.chat.id, text=message_text, parse_mode="markdown", reply_markup=keyboard)
     else:
@@ -245,3 +246,13 @@ def callback_add_performer(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     set_state(call.message.chat.id, ChecklistStates.STATE_MCL_8.value)
     return bot.send_message(call.message.chat.id, get_lt_from_number(8))
+
+
+@bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == ChecklistStates.STATE_PROJECT_PAGE.value and call.data == 'generate_diagram')
+def callback_generate_diagram(call):
+    buffer = Buffer()
+    project = buffer.get(str(call.message.chat.id) + "chosen_project")
+    projectdb = ProjectDB(instance=project)
+    filename = generate_diagram(projectdb.project)
+    with open(filename, 'rb') as f:
+        bot.send_photo(call.message.chat.id, f)

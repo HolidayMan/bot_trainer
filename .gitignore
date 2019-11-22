@@ -111,3 +111,4 @@ local_settings/
 /tests.py
 *.vdb
 buffer
+/tmp/*

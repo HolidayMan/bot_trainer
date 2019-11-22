@@ -253,6 +253,9 @@ def callback_generate_diagram(call):
     buffer = Buffer()
     project = buffer.get(str(call.message.chat.id) + "chosen_project")
     projectdb = ProjectDB(instance=project)
-    filename = generate_diagram(projectdb.project)
-    with open(filename, 'rb') as f:
-        bot.send_photo(call.message.chat.id, f)
+    try:
+        filename = generate_diagram(projectdb.project)
+        with open(filename, 'rb') as f:
+            bot.send_photo(call.message.chat.id, f)
+    except FileNotFoundError:
+        bot.send_message(call.message.chat.id, 'Добавьте задачи для прокта')

@@ -64,4 +64,7 @@ def generate_diagram(project):
 
     drawing = svg2rlg(os.path.join(config.TMP_PATH, str(project.user)+'.svg'))
     renderPM.drawToFile(drawing, os.path.join(config.TMP_PATH, str(project.user)+'.jpg'), fmt="jpg")
+
+    os.remove(os.path.join(config.TMP_PATH, str(project.user)+'.svg'))
+    
     return os.path.join(config.TMP_PATH, str(project.user)+'.jpg')

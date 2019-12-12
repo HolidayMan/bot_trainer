@@ -12,11 +12,11 @@ def paginate_projects(projects, page=1):
     page = paginator.page(page)
 
     if page.data:
-        message_text = f'Ваши проекты: (страница {page.number} из {paginator.last_page_number()})\n'
+        message_text = f'Ваші проекти: (сторінка {page.number} з {paginator.last_page_number()})\n'
         for num, project in enumerate(page, page.start_index+1): # generating of a message
             message_text+='{} _{}_\n'.format(num, project.name)
     else:
-        return  (f'У вас нет проектов', None)
+        return  (f'У вас немає проектів', None)
 
     keyboard = types.InlineKeyboardMarkup()
 
@@ -49,11 +49,11 @@ def paginate_tasks(project, tasks, page=1):
     page = paginator.page(page)
 
     if page.data:
-        message_text = f'{project.name}: (страница {page.number} из {paginator.last_page_number()})\n'
+        message_text = f'{project.name}: (сторінка {page.number} з {paginator.last_page_number()})\n'
         for num, project in enumerate(page, page.start_index+1): # generating of a message
             message_text+='{} _{}_\n'.format(num, project.name)
     else:
-        message_text = f'У вас нет задач в проекте {project.name}'
+        message_text = f'У вас немає задач у проекті {project.name}'
 
     keyboard = types.InlineKeyboardMarkup()
 
@@ -94,7 +94,7 @@ def paginate_tasks(project, tasks, page=1):
 @bot.message_handler(commands=['add_project'])
 def cmd_add_project(message: types.Message):
     set_state(message.chat.id, ChecklistStates.STATE_MCL_1.value)
-    return bot.send_message(message.chat.id, get_lt_from_number(1))
+    return bot.send_message(message.chat.id, get_lt_from_number(1), parse_mode="markdown")
 
 
 @bot.message_handler(commands=['my_projects'])

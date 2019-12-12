@@ -29,11 +29,11 @@ def paginate_projects(projects, page=1):
     page = paginator.page(page)
 
     if page.data:
-        message_text = f'Ваши проекты: (страница {page.number} из {paginator.last_page_number()})\n'
+        message_text = f'Ваші проекти: (сторінка {page.number} з {paginator.last_page_number()})\n'
         for num, project in enumerate(page, page.start_index+1): # generating of a message
             message_text+='{} _{}_\n'.format(num, project.name)
     else:
-        return  (f'У вас нет проектов', None)
+        return  (f'У вас немає проектів', None)
 
     keyboard = types.InlineKeyboardMarkup()
 
@@ -66,11 +66,11 @@ def paginate_tasks(project, tasks, page=1):
     page = paginator.page(page)
 
     if page.data:
-        message_text = f'{project.name}: (страница {page.number} из {paginator.last_page_number()})\n'
+        message_text = f'{project.name}: (сторінка {page.number} з {paginator.last_page_number()})\n'
         for num, project in enumerate(page, page.start_index+1): # generating of a message
             message_text+='{} _{}_\n'.format(num, project.name)
     else:
-        message_text = f'У вас нет задач в проекте {project.name}'
+        message_text = f'У вас немає задач у проекті {project.name}'
 
     keyboard = types.InlineKeyboardMarkup()
 
@@ -127,17 +127,17 @@ def gen_task_message(task):
 
     message_text = f'*{task.name}:*\n'
     if task.performers:
-        message_text += "Исполнители:\n"
+        message_text += "Виконавці:\n"
         for ind, performer in enumerate(task.performers, start=1):
             message_text += f"{ind}. {performer.name}\n"
     else:
-        message_text += "Добавьте исполнителей на кнопку +\n"
+        message_text += "Додай виконавців на кнопку +\n"
     message_text += '\n\n'
     if task.comments:
-        message_text += "Комментарий:\n"
+        message_text += "Комментар:\n"
         message_text += f"_{task.comments}_\n"
     else:
-        message_text += "Добавьте комментарий на кнопку 📝" + '\n'
+        message_text += "Додайте комментар на кнопку 📝" + '\n'
 
     return message_text, keyboard
 
@@ -185,7 +185,7 @@ def callback_add_task(call):
     message: types.Message = call.message
     set_state(message.chat.id, ChecklistStates.STATE_MCL_4.value)
     bot.delete_message(message.chat.id, message.message_id)
-    return bot.send_message(message.chat.id, get_lt_from_number(4))
+    return bot.send_message(message.chat.id, get_lt_from_number(4), parse_mode="markdown")
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == ChecklistStates.STATE_PROJECT_PAGE.value and call.data.split("_")[0] == 'taskindex')
@@ -225,7 +225,7 @@ def project_page_paginate(call):
 def task_add_comment(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     set_state(call.message.chat.id, ChecklistStates.STATE_MCL_11.value)
-    return bot.send_message(call.message.chat.id, get_lt_from_number(11))
+    return bot.send_message(call.message.chat.id, get_lt_from_number(11), parse_mode="markdown")
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == ChecklistStates.STATE_TASK_PAGE.value and call.data == 'project_task_go_back')
@@ -245,7 +245,7 @@ def tasks_go_back(call):
 def callback_add_performer(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     set_state(call.message.chat.id, ChecklistStates.STATE_MCL_8.value)
-    return bot.send_message(call.message.chat.id, get_lt_from_number(8))
+    return bot.send_message(call.message.chat.id, get_lt_from_number(8),  parse_mode="markdown")
 
 
 @bot.callback_query_handler(func=lambda call: get_current_state(call.message.chat.id) == ChecklistStates.STATE_PROJECT_PAGE.value and call.data == 'generate_diagram')
@@ -258,4 +258,4 @@ def callback_generate_diagram(call):
         with open(filename, 'rb') as f:
             bot.send_photo(call.message.chat.id, f)
     except FileNotFoundError:
-        bot.send_message(call.message.chat.id, 'Добавьте задачи для прокта')
+        bot.send_message(call.message.chat.id, 'Додайте задачі для проекту',  parse_mode="markdown",)

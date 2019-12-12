@@ -49,7 +49,7 @@ def project_name_handler(message: types.Message):
     buffer.add_or_change(buffer_key, new_project)
 
     set_state(message.chat.id, ChecklistStates.STATE_MCL_2.value)
-    return bot.send_message(message.chat.id, get_lt_from_number(2))
+    return bot.send_message(message.chat.id, get_lt_from_number(2), parse_mode="markdown")
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == ChecklistStates.STATE_MCL_2.value)
@@ -57,7 +57,7 @@ def project_date_handler(message: types.Message):
     try:
         dates = parse_date(message.text)
     except DateParseError:
-        return bot.send_message(message.chat.id, ph.INCORRECT_DATE),
+        return bot.send_message(message.chat.id, ph.INCORRECT_DATE, parse_mode="markdown"),
 
     buffer = Buffer()
     buffer_key = str(message.chat.id) + 'new_project'
@@ -81,7 +81,7 @@ def task_name_handler(message):
     buffer_key = str(message.chat.id) + "new_task"
     buffer.add_or_change(buffer_key, new_task)
     set_state(message.chat.id, ChecklistStates.STATE_MCL_5.value)
-    return bot.send_message(message.chat.id, get_lt_from_number(5))
+    return bot.send_message(message.chat.id, get_lt_from_number(5), parse_mode="markdown")
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == ChecklistStates.STATE_MCL_5.value)
@@ -89,7 +89,7 @@ def task_date_handler(message):
     try:
         date = parse_one_date(message.text)
     except DateParseError:
-        return bot.send_message(message.chat.id, ph.INCORRECT_DATE),
+        return bot.send_message(message.chat.id, ph.INCORRECT_DATE, parse_mode="markdown"),
 
     buffer = Buffer()
     buffer_key = str(message.chat.id) + "new_task"
@@ -97,7 +97,7 @@ def task_date_handler(message):
     new_task.date_start = date
     buffer.add_or_change(buffer_key, new_task)
     set_state(message.chat.id, ChecklistStates.STATE_MCL_6.value)
-    return bot.send_message(message.chat.id, ph.DATE_ADDED), bot.send_message(message.chat.id, get_lt_from_number(6))
+    return bot.send_message(message.chat.id, ph.DATE_ADDED), bot.send_message(message.chat.id, get_lt_from_number(6), parse_mode="markdown")
 
 
 @bot.message_handler(func=lambda message: get_current_state(message.chat.id) == ChecklistStates.STATE_MCL_6.value)
@@ -105,7 +105,7 @@ def task_duration_handler(message):
     try:
         duration = int(message.text)
     except ValueError:
-        return bot.send_message(message.chat.id, ph.INCORRECT_DURATION),
+        return bot.send_message(message.chat.id, ph.INCORRECT_DURATION, parse_mode="markdown"),
     
     buffer = Buffer()
     buffer_key = str(message.chat.id) + "new_task"
@@ -128,8 +128,8 @@ def task_duration_handler(message):
     call = MyCall()
     call.message = message
     return (
-            bot.send_message(message.chat.id, ph.DURATION_ADDED),
-            bot.send_message(message.chat.id, get_lt_from_number(7)),
+            bot.send_message(message.chat.id, ph.DURATION_ADDED, parse_mode="markdown"),
+            bot.send_message(message.chat.id, get_lt_from_number(7), parse_mode="markdown"),
             choose_project(call, send_new=True)
     )
 
@@ -142,8 +142,8 @@ def performer_name_handler(message: types.Message):
     buffer.add_or_change(buffer_key, new_performer)
     set_state(message.chat.id, ChecklistStates.STATE_MCL_9.value)
     return (
-            bot.send_message(message.chat.id, ph.NAME_ADDED),
-            bot.send_message(message.chat.id, get_lt_from_number(9)),
+            bot.send_message(message.chat.id, ph.NAME_ADDED, parse_mode="markdown"),
+            bot.send_message(message.chat.id, get_lt_from_number(9), parse_mode="markdown"),
     )
 
 
@@ -160,8 +160,8 @@ def performer_phone_handler(message: types.Message):
         set_state(message.chat.id, ChecklistStates.STATE_MCL_10.value)
 
     return (
-        bot.send_message(message.chat.id, ph.PHONE_ADDED),
-        bot.send_message(message.chat.id, get_lt_from_number(10))
+        bot.send_message(message.chat.id, ph.PHONE_ADDED, parse_mode="markdown"),
+        bot.send_message(message.chat.id, get_lt_from_number(10), parse_mode="markdown")
     )
 
 
@@ -193,7 +193,7 @@ def performer_comment_handler(message: types.Message):
     call = MyCall()
     call.message = message
     return (
-        bot.send_message(message.chat.id, ph.COMMENT_ADDED),
+        bot.send_message(message.chat.id, ph.COMMENT_ADDED, parse_mode="markdown"),
         choose_task(call, send=True)
     )
 
@@ -222,7 +222,7 @@ def task_comment_handler(message: types.Message):
     call = MyCall()
     call.message = message
     return (
-        bot.send_message(message.chat.id, ph.COMMENT_ADDED),
+        bot.send_message(message.chat.id, ph.COMMENT_ADDED, parse_mode="markdown"),
         choose_task(call, send=True)
     )
 

@@ -2,13 +2,14 @@ def build_pages(seq, step) -> list:
     pages = []
     page = []
 
-    for i in range(len(seq)):
+    for index, item in enumerate(seq):
         if len(page) < step:
-            page.append(seq[i])
+            page.append(item)
         else:
             pages.append(page)
-            page = [seq[i]]
+            page = [item]
     pages.append(page)
+
     return pages
 
 
@@ -17,6 +18,7 @@ class Page:
     next_page = None
     previous_page_number = None
     next_page_number = None
+
     def __init__(self, data, num, paginator, start_index, last_index):
         self.data = data
         self.number = num
@@ -24,23 +26,18 @@ class Page:
         self.start_index = start_index
         self.last_index = last_index
 
-
     def has_next(self):
         return bool(self.next_page)
 
-    
     def has_previous(self):
         return bool(self.previous_page)
-
 
     def get_range(self):
         return range(self.start_index, self.last_index+1)
 
-
     def __repr__(self):
         return f"<Page %d of %d>" % (self.number, len(self.paginator.pages))
 
-    
     def __getitem__(self, key):
         if key < -1 or key > len(self.data) - 1:
             raise StopIteration
@@ -70,16 +67,10 @@ class Paginator:
             raise ValueError("invalid page number")
         return self.pages[number-1]
 
-    
     def last_page_number(self):
         return self.pages[-1].number
-
     
     def __getitem__(self, key):
         if key < -1 or key > len(self.pages) - 1:
             raise StopIteration
         return self.pages[key]
-
-    
-    
-    
